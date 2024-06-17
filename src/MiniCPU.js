@@ -49,10 +49,11 @@ const EstadoLineaController = {
 
 
 
-export default function MiniCPU(cuadricula, fichaCpu, fichaJugador, dificultad) {
+export default function MiniCPU(cuadricula, fichaCpu, fichaJugador, fichaEspacio, dificultad) {
     this.cuadricula = cuadricula
     this.fichaCpu = fichaCpu
     this.fichaJugador = fichaJugador
+    this.fichaEspacio = fichaEspacio
     this.dificultad = dificultad
     this.circuitoLinea = null
 }
@@ -192,17 +193,19 @@ MiniCPU.prototype.colocarPuntoEstrategico = function () {
 
     let puntos = []
     if (this.dificultad.isEscalaMedia()) {
-        const l = this.cuadricula.toLineas().find(l => l.getPropietario() === null)
-        if (l !== void 0 && this.cuadricula.getCeldasOcupada().length === 2 && this.cuadricula.fromXY(1, 1).getClaseFicha().toString() === this.fichaJugador.toString()) {
-            puntos = l.toArrayCelda().filter(c => c.isEspacioDisponible()).map(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto)
+        const {linea} = this.cuadricula.toLineas().map(l => new Bien(l, this.fichaCpu, this.fichaJugador, this.fichaEspacio))
+        .find(b => b.getPropietario() === null)
+        
+        if (linea && this.cuadricula.getCeldasOcupada().length === 2 && this.cuadricula.fromXY(1, 1).getClaseFicha().toString() === this.fichaJugador.toString()) {
+            puntos = linea.toArrayCelda().filter(c => c.isEspacioDisponible()).map(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto)
         } else {
             this.crearCircuito()
             puntos = this.circuitoLinea.interceptosClaveDisponibles().map(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto)
         }
+
     } else if (this.dificultad.isEscalaFacil()){
-        const lineas = this.cuadricula.toLineas()
-        const bienes = lineas.filter(l => l.tienePropietario())
-            .map(l => new Bien(l, l.getPropietario()))
+        const lineas = this.cuadricula.toLineas().map(l => new Bien(l, this.fichaCpu, this.fichaJugador, this.fichaEspacio))
+        const bienes = lineas.filter(b => b.tienePropietario())
         const intersectos = this.getIntersectos(bienes.map(bien => bien.getLinea()))    
         puntos = intersectos.filter(({ celda }) => celda.isEspacioDisponible())
             .map(({ celda: { ubicacion } }) => ubicacion.getPuntoAbstracto())
@@ -216,12 +219,12 @@ MiniCPU.prototype.colocarPuntoEstrategico = function () {
 }
 
 MiniCPU.prototype.crearCircuito = function () {
-    const lineas = this.cuadricula.toLineas()
-    const bienes = lineas.filter(l => l.tienePropietario())
-        .map(l => new Bien(l, l.getPropietario()))
+    const lineas = this.cuadricula.toLineas().map(l => new Bien(l, this.fichaCpu, this.fichaJugador, this.fichaEspacio))
+    const bienes = lineas.filter(b => b.tienePropietario())
+
     if (this.circuitoLinea === null) {
-        const lineasCpu = bienes.filter(({ propietario }) => propietario.toString() === this.fichaCpu.toString()).map(({ linea }) => linea)
-        const lineasCierre = bienes.filter(({ propietario }) => propietario.toString() === ClaseList.fromNombre('ficha-espacio').toString()).map(({ linea }) => linea)
+        const lineasCpu = bienes.filter(b => b.isFichaCpu()).map(({ linea }) => linea)
+        const lineasCierre = bienes.filter(b => b.isFichaEspacio()).map(({ linea }) => linea)
         for (let linea of lineasCierre) {
             this.circuitoLinea = new Circuito(...lineasCpu, linea)
             if (this.circuitoLinea.formaCircuito()) {

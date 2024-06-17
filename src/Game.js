@@ -19,6 +19,7 @@ const EstadoBoton = {
 
 
 export default function Game(config) {
+    this.config = config
     this.cuadricula = null
     this.tablero = null
     this.fichaEnJuego = null
@@ -26,11 +27,13 @@ export default function Game(config) {
     this.botonFichaEnJuego = null
     this.celdaElegidaJugador = null
     this.miniCPU = null
-    this.config = config
     this.animacion = null
     this.x = 0.5 * config.ANCHO - 30 
     this.timer = 0
 }
+
+Game.prototype = Object.create(Game.prototype)
+Game.prototype.constructor = Game
 
 Game.prototype.create = function () {
     this.add.sprite(0, 0, 'tablero')
@@ -42,8 +45,8 @@ Game.prototype.create = function () {
     this.botonFichaEspacio.anchor.set(0.5)
 
     this.fichaEnJuego = this.config.getFichaCpu()
-    this.cuadricula = new Cuadricula(this.config.getFichaCpu())
-    this.miniCPU = new MiniCPU(this.cuadricula, this.config.getFichaCpu(), this.config.getClaseFicha(), this.config.getDificultad())
+    this.cuadricula = new Cuadricula()
+    this.miniCPU = new MiniCPU(this.cuadricula, this.config.getFichaCpu(), this.config.getClaseFicha(), this.config.getFichaEspacio(), this.config.getDificultad())
 
     this.animacion = this.add.group()
     

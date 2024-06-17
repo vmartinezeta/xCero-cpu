@@ -7,8 +7,7 @@ import Punto from "./Punto.js"
 import Ubicacion from "./Ubicacion.js"
 
 
-export default function Cuadricula(fichaCpu) {
-    this.fichaCpu = fichaCpu
+export default function Cuadricula() {
     this.NUMERO_FILAS = 3
     this.NUMERO_COLUMNAS = 3
     this.celdas = []
@@ -58,11 +57,11 @@ Cuadricula.prototype.toLineas = function () {
                 celdasDiagonal2.push(this.fromXY(i, j))
             }
         }
-        lineas.push(new Linea(celdasHorizontal, ClaseList.fromNombre('horizontal'), this.fichaCpu))
-        lineas.push(new Linea(celdasVertical, ClaseList.fromNombre('vertical'), this.fichaCpu))
+        lineas.push(new Linea(celdasHorizontal, ClaseList.fromNombre('horizontal')))
+        lineas.push(new Linea(celdasVertical, ClaseList.fromNombre('vertical')))
     }
-    lineas.push(new Linea(celdasDiagonal1, ClaseList.fromNombre('diagonal-1'), this.fichaCpu))
-    lineas.push(new Linea(celdasDiagonal2, ClaseList.fromNombre('diagonal-2'), this.fichaCpu))
+    lineas.push(new Linea(celdasDiagonal1, ClaseList.fromNombre('diagonal-1')))
+    lineas.push(new Linea(celdasDiagonal2, ClaseList.fromNombre('diagonal-2')))
     return lineas
 }
 

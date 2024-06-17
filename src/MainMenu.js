@@ -1,9 +1,14 @@
 /*Autor: Víctor Martínez*/
 
+import Configure from "./Configure.js"
+
 export default function MainMenu(config) {
-    this.sonidos = []
     this.config = config
+    this.sonidos = []
 }
+
+MainMenu.prototype = Object.create(MainMenu.prototype)
+MainMenu.prototype.constructor = MainMenu
 
 MainMenu.prototype.create = function () {
     this.add.sprite(0, 0, 'menu-principal')
@@ -20,6 +25,8 @@ MainMenu.prototype.create = function () {
         this.sonidos = [this.config.musicaFondo]
         this.sound.setDecodedCallback(this.sonidos, this.iniciarMusica, this)
     }
+    // es@ importante para rendimiento
+    this.state.add('Configure', new Configure(this.config))
 }
 
 MainMenu.prototype.iniciarMusica = function () {

@@ -29,6 +29,11 @@ ConfigxCero.prototype.getClaseFicha = function () {
     return this.claseFicha
 }
 
+
+ConfigxCero.prototype.getFichaEspacio = function() {
+    return ClaseList.fromNombre("ficha-espacio")
+}
+
 ConfigxCero.prototype.getClasesFicha = function () {
     return ClaseList.fromRango(0, 1)
 }

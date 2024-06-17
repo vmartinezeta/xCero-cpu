@@ -1,11 +1,8 @@
 /*Autor: Víctor Martínez*/
 
-import ClaseList from "./ClaseList.js"
-
-export default function Linea(celdas, claseLinea, fichaCpu) {
+export default function Linea(celdas, claseLinea) {
     this.celdas = celdas
     this.claseLinea = claseLinea
-    this.fichaCpu = fichaCpu
 }
 
 Linea.prototype = Object.create(Linea.prototype)
@@ -61,41 +58,6 @@ Linea.prototype.getCeldaEspacio = function () {
 
 Linea.prototype.tieneEspacioDisponible = function () {
     return this.celdas.filter(c => c.isEspacioDisponible()).length > 0
-}
-
-Linea.prototype.getPropietario = function () {
-    const contador = { cpu: 0, jugador: 0, espacio: 0 }
-    const fichaCpu = this.fichaCpu
-    const lista = ClaseList.fromRango(0,1)
-    const fichaJugador = lista.find(clase => clase.toString() !== fichaCpu.toString())
-    
-    for (let c of this.celdas) {
-        const clase = c.getClaseFicha()
-        if (clase.toString() === fichaCpu.toString()) {
-            contador.cpu++
-        } else if (clase.toString() === fichaJugador.toString()) {
-            contador.jugador++
-        } else if (clase.toString() === ClaseList.fromNombre('ficha-espacio').toString()) {
-            contador.espacio++
-        }
-    }
-
-    const { cpu, jugador, espacio } = contador
-
-    if ((cpu > jugador && cpu > espacio)
-        || (espacio > jugador && espacio > cpu && cpu > jugador)) {
-        return fichaCpu
-    } else if ((jugador > cpu && jugador > espacio)
-        || (espacio > jugador && espacio > cpu && jugador > cpu)) {
-        return fichaJugador
-    } else if (espacio > jugador && espacio > cpu) {
-        return ClaseList.fromNombre('ficha-espacio')
-    }
-    return null
-}
-
-Linea.prototype.tienePropietario = function () {
-    return this.getPropietario() !== null
 }
 
 Linea.prototype.pertenece = function (punto) {

@@ -9,6 +9,9 @@ export default function Configure(config) {
     this.barraProgreso = null
 }
 
+Configure.prototype = Object.create(Configure.prototype)
+Configure.prototype.constructor = Configure
+
 Configure.prototype.create = function () {
     this.add.sprite(0, 0, 'configuracion')
 
@@ -28,13 +31,11 @@ Configure.prototype.create = function () {
     this.barraProgreso = new BarraProgreso(this, new Punto(105, 136), this.config.volumen, color)
 }
 
-
 Configure.prototype.crearButton = function(x, y, name, callback, context) {
     const boton = this.add.button(x, y, name, callback, context)
     boton.anchor.set(1 / 2)
     boton.input.useHandCursor = true
 }
-
 
 Configure.prototype.ajustarVolumen = function () {
     let siguienteVol = this.barraProgreso.getVol() + 10
@@ -43,6 +44,7 @@ Configure.prototype.ajustarVolumen = function () {
         siguienteVol = 0
         this.barraProgreso.setVol(siguienteVol)  
     }
+    
     this.config.musicaFondo.volume = siguienteVol / 100
     this.config.volumen = siguienteVol
 }
