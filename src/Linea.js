@@ -1,82 +1,33 @@
 /*Autor: Víctor Martínez*/
 
-export default function Linea(celdas, claseLinea) {
+export default function Linea(celdas, orientacion) {
     this.celdas = celdas
-    this.claseLinea = claseLinea
+    this.orientacion = orientacion
 }
 
 Linea.prototype = Object.create(Linea.prototype)
 Linea.prototype.constructor = Linea
 
-Linea.prototype.getClaseLinea = function () {
-    return this.claseLinea
-}
-
-Linea.prototype.getC1 = function () {
-    return this.celdas[0]
-}
-
-Linea.prototype.getC2 = function () {
-    return this.celdas[1]
-}
-
-Linea.prototype.getC3 = function () {
-    return this.celdas[2]
-}
-
-Linea.prototype.toPuntosAbstracto = function () {
-    return this.celdas.map(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto)
-}
-
-Linea.prototype.toString = function () {
-    return this.celdas.map(c => c.toBit()).join('')
-}
-
-Linea.prototype.toNumber = function () {
-    return Number(this.toString())
+Linea.prototype.getOrientacion = function () {
+    return this.orientacion
 }
 
 Linea.prototype.toBit = function () {
-    return this.toBitArray().reduce((numero, subtotal) => subtotal + numero, 0)
+    return this.celdas.map(c => c.toBit()).reduce((numero, subtotal) => subtotal + numero, 0)
 }
 
-Linea.prototype.toBitArray = function () {
-    return this.celdas.map(c => c.toBit())
-}
-
-Linea.prototype.toArrayCelda = function () {
-    return this.celdas
-}
-
-Linea.prototype.celdaFrom = function (punto) {
-    return this.celdas.find(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto.toString() === punto.toString())
-}
-
-Linea.prototype.getCeldaEspacio = function () {
-    return this.celdas.find(celda => celda.isEspacioDisponible())
-}
-
-Linea.prototype.tieneEspacioDisponible = function () {
-    return this.celdas.filter(c => c.isEspacioDisponible()).length > 0
+Linea.prototype.toPuntosAbstracto = function () {
+    return this.celdas.map(({ubicacion}) => ubicacion.puntoAbstracto)
 }
 
 Linea.prototype.pertenece = function (punto) {
-    return this.toPuntosAbstracto().filter(p => p.toString() === punto.toString()).length === 1
+    return this.toPuntosAbstracto().find(p = p.toString() === punto.toString())
 }
 
-Linea.prototype.correspondeExtremo = function (celda) {
-    return this.correspondeExtremoIzquierdo(celda)
-        || this.correspondeExtremoDerecho(celda)
+Linea.prototype.hayGanador = function () {
+    return [0, 3].includes(this.toBit())
 }
 
-Linea.prototype.correspondeExtremoIzquierdo = function (celda) {
-    const { puntoAbstracto } = this.getC1().getUbicacion()
-    const ubicacion = celda.getUbicacion()
-    return puntoAbstracto.toString() === ubicacion.getPuntoAbstracto().toString()
-}
-
-Linea.prototype.correspondeExtremoDerecho = function (celda) {
-    const { puntoAbstracto } = this.getC3().getUbicacion()
-    const ubicacion = celda.getUbicacion()
-    return puntoAbstracto.toString() === ubicacion.getPuntoAbstracto().toString()
+Linea.prototype.contieneTodas = function(ficha) {
+    return 3 * ficha.id === this.toBit()
 }

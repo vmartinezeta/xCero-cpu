@@ -5,7 +5,6 @@ export default function Preloader(game) {}
 Preloader.prototype.preload = function () {
 
     this.load.image('volumen', 'images/vocero.png')
-    this.load.image('pensando', 'images/reaccion-cpu.png')
     this.load.image('linea-1', 'images/linea-1.png')
     this.load.image('linea-2', 'images/linea-2.png')
     this.load.image('menu-principal', 'images/menu-principal.png')
@@ -37,12 +36,11 @@ Preloader.prototype.preload = function () {
     this.load.image('rotulo-ganador', 'images/rotulo-ganador.png')
     this.load.image('rotulo-empate', 'images/rotulo-empate.png')
     this.load.image('rotulo-perdedor', 'images/rotulo-perdedor.png')
-    this.load.image('punto', 'images/punto.png')
 
     this.load.audio('ganador', ['audio/ganador.mp3'])
     this.load.audio('perdedor', ['audio/perdedor.mp3'])
     this.load.audio('empate', ['audio/empate.mp3'])
-    this.load.audio('musica-fondo',['audio/musica-fondo.mp3'])
+    this.load.audio('musica-fondo',['audio/stranger-things.mp3'])
 }
 
 Preloader.prototype.create = function () {

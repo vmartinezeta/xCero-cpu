@@ -16,6 +16,7 @@ const ClaseList = {
         new Clasificacion(8, 'vertical'),
         new Clasificacion(9, 'diagonal-1'),
         new Clasificacion(10, 'diagonal-2'),
+        new Clasificacion(11, 'nivel-dificil'),
     ],
     fromRango: function (inicio, fin) {
         return this.lista.filter(c => {

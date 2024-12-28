@@ -13,29 +13,28 @@ ConfigxCero.prototype.ALTURA = 500
 ConfigxCero.prototype.musicaFondo = null
 ConfigxCero.prototype.volumen = 10
 ConfigxCero.prototype.fichaCpu = new Clasificacion(0, 'ficha-0')
-ConfigxCero.prototype.claseFicha = new Clasificacion(1, 'ficha-x')
+ConfigxCero.prototype.fichaJugador = new Clasificacion(1, 'ficha-x')
 ConfigxCero.prototype.dificultad = new Clasificacion(2, 'nivel-facil')
 
-ConfigxCero.prototype.setClaseFicha = function (claseFicha) {
-    this.claseFicha = claseFicha
-    this.fichaCpu = this.getClasesFicha().find(clase => clase.toString() !== claseFicha.toString())
+ConfigxCero.prototype.setFichaJugador = function (fichaJugador) {
+    this.fichaJugador = fichaJugador
+    this.fichaCpu = this.getClasesFicha().find(ficha => ficha.id !== fichaJugador.id)
+}
+
+ConfigxCero.prototype.getFichaJugador = function () {
+    return this.fichaJugador
 }
 
 ConfigxCero.prototype.getFichaCpu = function () {
     return this.fichaCpu
 }
 
-ConfigxCero.prototype.getClaseFicha = function () {
-    return this.claseFicha
+ConfigxCero.prototype.getClasesFicha = function() {
+    return ClaseList.fromRango(0, 1)
 }
-
 
 ConfigxCero.prototype.getFichaEspacio = function() {
     return ClaseList.fromNombre("ficha-espacio")
-}
-
-ConfigxCero.prototype.getClasesFicha = function () {
-    return ClaseList.fromRango(0, 1)
 }
 
 ConfigxCero.prototype.getDificultad = function () {

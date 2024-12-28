@@ -7,9 +7,9 @@ export default function EstadoMensaje(observador) {
         this.falloJugador()
     } else if (observador.hayEmpate()) {
         this.empate()
-    } else {
-        throw new TypeError("No se puede dar un estado")
     }
+
+    throw new TypeError("No se puede dar un estado")
 }
 
 EstadoMensaje.prototype = Object.create(EstadoMensaje.prototype)

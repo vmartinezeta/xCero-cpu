@@ -25,7 +25,7 @@ MainMenu.prototype.create = function () {
         this.sonidos = [this.config.musicaFondo]
         this.sound.setDecodedCallback(this.sonidos, this.iniciarMusica, this)
     }
-    // es@ importante para rendimiento
+
     this.state.add('Configure', new Configure(this.config))
 }
 

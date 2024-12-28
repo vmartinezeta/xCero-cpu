@@ -1,11 +1,6 @@
 /*Autor: Víctor Martínez*/
 
-import Bien from "./Bien.js"
-import Circuito from "./Circuito.js"
 import ClaseList from "./ClaseList.js"
-import EstadoLinea from "./EstadoLinea.js"
-import Interseccion from "./Intercepcion.js"
-import ParejaLinea from "./ParejaLinea.js"
 import Punto from "./Punto.js"
 import PuntoArranque from "./PuntoArranque.js"
 
@@ -26,28 +21,6 @@ const PuntoArranqueController = {
         })
     }
 }
-
-
-const EstadoLineaController = {
-    lista: [
-        new EstadoLinea(ClaseList.fromNombre('ficha-x'), 114, ClaseList.fromNombre('puede-ganar')),
-        new EstadoLinea(ClaseList.fromNombre('ficha-x'), 141, ClaseList.fromNombre('puede-ganar')),
-        new EstadoLinea(ClaseList.fromNombre('ficha-x'), 411, ClaseList.fromNombre('puede-ganar')),
-        new EstadoLinea(ClaseList.fromNombre('ficha-x'), 111, ClaseList.fromNombre('ganador')),
-        new EstadoLinea(ClaseList.fromNombre('ficha-0'), 4, ClaseList.fromNombre('puede-ganar')),
-        new EstadoLinea(ClaseList.fromNombre('ficha-0'), 40, ClaseList.fromNombre('puede-ganar')),
-        new EstadoLinea(ClaseList.fromNombre('ficha-0'), 400, ClaseList.fromNombre('puede-ganar')),
-        new EstadoLinea(ClaseList.fromNombre('ficha-0'), 0, ClaseList.fromNombre('ganador'))
-    ],
-    from: function (ficha, estado) {
-        return this.lista.filter(e => ficha.toString() === e.getClaseFicha().toString() && e.getClaseEstado().toString() === estado.toString())
-    },
-    fromClase: function (clase) {
-        return this.lista.filter(e => e.getClaseEstado().toString() === clase.toString())
-    }
-}
-
-
 
 export default function MiniCPU(cuadricula, fichaCpu, fichaJugador, fichaEspacio, dificultad) {
     this.cuadricula = cuadricula
@@ -79,8 +52,7 @@ MiniCPU.prototype.colocarFicha = function () {
 }
 
 MiniCPU.prototype.hayEspacioDisponible = function () {
-    const lineas = this.cuadricula.toLineas()
-    return lineas.filter(l => l.tieneEspacioDisponible()).length > 0
+    return this.cuadricula.tieneEspacioDisponible()
 }
 
 MiniCPU.prototype.finalizoJuego = function () {
@@ -89,65 +61,40 @@ MiniCPU.prototype.finalizoJuego = function () {
 
 MiniCPU.prototype.hayGanador = function () {
     const lineas = this.cuadricula.toLineas()
-    const estados = EstadoLineaController.fromClase(ClaseList.fromNombre('ganador'))
-    return lineas.filter(l => estados.map(c => c.getEstado()).includes(l.toNumber())).length === 1
+    for (const l of lineas) {
+        if (l.hayGanador()) return true
+    }
+    return false
 }
 
 MiniCPU.prototype.falloJugador = function () {
-    const lineas = this.cuadricula.toLineas()
-    const [controller] = EstadoLineaController.from(this.fichaCpu, ClaseList.fromNombre('ganador'))
-    return this.hayGanador() && lineas.filter(l => l.toNumber() === controller.getEstado()).length === 1
-}
-
-MiniCPU.prototype.ganoJugador = function () {
-    const lineas = this.cuadricula.toLineas()
-    const [controller] = EstadoLineaController.from(this.fichaJugador, ClaseList.fromNombre('ganador'))
-    return this.hayGanador() && lineas.filter(l => l.toNumber() === controller.getEstado()).length === 1
+    try {
+     const l = this.getLineaGanador()
+     return l.contieneTodas(this.fichaCpu)
+    } catch (error) {
+        return false
+    }
 }
 
 MiniCPU.prototype.getLineaGanador = function () {
     if (!this.hayGanador()) {
-        throw new Error('No hay ganador.')
+        throw new Error('MiniCPU.prototype.getLineaGanador().No hay ganador')
     }
     const lineas = this.cuadricula.toLineas()
-    if (this.ganoJugador()) {
-        const [controller] = EstadoLineaController.from(this.fichaJugador, ClaseList.fromNombre('ganador'))
-        return lineas.find(l => l.toNumber() === controller.getEstado())
-    } else if (this.falloJugador()) {
-        const [controller] = EstadoLineaController.from(this.fichaCpu, ClaseList.fromNombre('ganador'))
-        return lineas.find(l => l.toNumber() === controller.getEstado())
+    for (const l of lineas) {
+        if (l.hayGanador()) {
+            return l
+        }
     }
 }
 
-MiniCPU.prototype.puedeNeutralizar = function () {
-    const lineas = this.cuadricula.toLineas()
-    const estados = EstadoLineaController.from(this.fichaJugador, ClaseList.fromNombre('puede-ganar'))
-    return lineas.filter(l => estados.map(c => c.getEstado()).includes(l.toNumber())).length > 0
-}
+MiniCPU.prototype.puedeNeutralizar = function () {}
 
-MiniCPU.prototype.neutralizar = function () {
-    const lineas = this.cuadricula.toLineas()
-    const estados = EstadoLineaController.from(this.fichaJugador, ClaseList.fromNombre('puede-ganar'))
-    const [l] = lineas.filter(l => estados.map(c => c.getEstado()).includes(l.toNumber()))
-    const celda = l.getCeldaEspacio()
-    celda.setClaseFicha(this.fichaCpu)
-    this.cuadricula.setCelda(celda)
-}
+MiniCPU.prototype.neutralizar = function () {}
 
-MiniCPU.prototype.puedeGanar = function () {
-    const lineas = this.cuadricula.toLineas()
-    const estados = EstadoLineaController.from(this.fichaCpu, ClaseList.fromNombre('puede-ganar'))
-    return lineas.filter(l => estados.map(c => c.getEstado()).includes(l.toNumber())).length > 0
-}
+MiniCPU.prototype.puedeGanar = function () {}
 
-MiniCPU.prototype.ganar = function () {
-    const lineas = this.cuadricula.toLineas()
-    const estados = EstadoLineaController.from(this.fichaCpu, ClaseList.fromNombre('puede-ganar'))
-    const [l] = lineas.filter(l => estados.map(c => c.getEstado()).includes(l.toNumber()))
-    const celda = l.getCeldaEspacio()
-    celda.setClaseFicha(this.fichaCpu)
-    this.cuadricula.setCelda(celda)
-}
+MiniCPU.prototype.ganar = function () {}
 
 MiniCPU.prototype.hayEmpate = function () {
     return !this.hayEspacioDisponible() && !this.hayGanador()
@@ -161,7 +108,7 @@ MiniCPU.prototype.debeHacerEstrategia = function () {
 }
 
 MiniCPU.prototype.debeColocarPuntoArranque = function () {
-    return this.cuadricula.getCeldasOcupada().length === 0
+    return this.cuadricula.tieneEspacioDisponible()
 }
 
 MiniCPU.prototype.colocarPuntoArranque = function () {
@@ -174,77 +121,12 @@ MiniCPU.prototype.colocarPuntoArranque = function () {
     this.cuadricula.setCelda(celda)
 }
 
-MiniCPU.prototype.getIntersectos = function (lineas) {
-    const intersectos = []
-    for (let i = 0; i < lineas.length; i++) {
-        for (let j = i + 1; j < lineas.length; j++) {
-            const pareja = new ParejaLinea(lineas[i], lineas[j])
-            const parejas = intersectos.map(intercepto => intercepto.getPareja())
-            if (pareja.intersecta() && !this.existe(pareja, parejas)) {
-                const celda = pareja.getCeldaIntercepto()
-                intersectos.push(new Interseccion(pareja, celda))
-            }
-        }
-    }
-    return intersectos
-}
+MiniCPU.prototype.colocarPuntoEstrategico = function () {}
 
-MiniCPU.prototype.colocarPuntoEstrategico = function () {
-
-    let puntos = []
-    if (this.dificultad.isEscalaMedia()) {
-        const {linea} = this.cuadricula.toLineas().map(l => new Bien(l, this.fichaCpu, this.fichaJugador, this.fichaEspacio))
-        .find(b => b.getPropietario() === null)
-        
-        if (linea && this.cuadricula.getCeldasOcupada().length === 2 && this.cuadricula.fromXY(1, 1).getClaseFicha().toString() === this.fichaJugador.toString()) {
-            puntos = linea.toArrayCelda().filter(c => c.isEspacioDisponible()).map(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto)
-        } else {
-            this.crearCircuito()
-            puntos = this.circuitoLinea.interceptosClaveDisponibles().map(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto)
-        }
-
-    } else if (this.dificultad.isEscalaFacil()){
-        const lineas = this.cuadricula.toLineas().map(l => new Bien(l, this.fichaCpu, this.fichaJugador, this.fichaEspacio))
-        const bienes = lineas.filter(b => b.tienePropietario())
-        const intersectos = this.getIntersectos(bienes.map(bien => bien.getLinea()))    
-        puntos = intersectos.filter(({ celda }) => celda.isEspacioDisponible())
-            .map(({ celda: { ubicacion } }) => ubicacion.getPuntoAbstracto())
-    }
-
-    const n = Math.floor(Math.random() * puntos.length)
-    const punto = puntos[n]
-    const celda = this.cuadricula.fromPunto(punto)
-    celda.setClaseFicha(this.fichaCpu)
-    this.cuadricula.setCelda(celda)
-}
-
-MiniCPU.prototype.crearCircuito = function () {
-    const lineas = this.cuadricula.toLineas().map(l => new Bien(l, this.fichaCpu, this.fichaJugador, this.fichaEspacio))
-    const bienes = lineas.filter(b => b.tienePropietario())
-
-    if (this.circuitoLinea === null) {
-        const lineasCpu = bienes.filter(b => b.isFichaCpu()).map(({ linea }) => linea)
-        const lineasCierre = bienes.filter(b => b.isFichaEspacio()).map(({ linea }) => linea)
-        for (let linea of lineasCierre) {
-            this.circuitoLinea = new Circuito(...lineasCpu, linea)
-            if (this.circuitoLinea.formaCircuito()) {
-                break
-            }
-        }
-    }
-}
-
-MiniCPU.prototype.existe = function (pareja, parejas) {
-    for (let actual of parejas) {
-        if (actual.toNumber() === pareja.toNumber()) {
-            return true
-        }
-    }
-    return false
-}
+MiniCPU.prototype.crearCircuito = function () {}
 
 MiniCPU.prototype.puedeResponderFormaRandom = function () {
-    const espacios = this.cuadricula.getCeldasEspacio().map(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto)
+    const espacios = this.cuadricula.toPuntosAbstracto()
     return espacios.length <= 3 && !this.formaLineaRecta(espacios)
 }
 

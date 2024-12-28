@@ -53,4 +53,3 @@ Bien.prototype.isFichaCpu = function() {
 Bien.prototype.isFichaEspacio = function() {
     return this.tienePropietario() && this.getPropietario().id === this.fichaEspacio.id
 }
-

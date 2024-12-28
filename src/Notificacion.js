@@ -8,7 +8,7 @@ export default function Notificacion(game, observador, origen) {
     sonido.play()
     const { x, y } = origen
     Phaser.Sprite.call(this, game, x, y, estado.titulo)
-    this.anchor.set(0.5)
+    this.anchor.set(1 / 2)
     game.add.existing(this)
 }
 

@@ -7,6 +7,7 @@ import Punto from "./Punto.js"
 import Tablero from "./Tablero.js"
 import Tachado from "./Tachado.js"
 import MiniCPU from "./MiniCPU.js"
+import { Loading } from "./Loading.js"
 
 const EstadoBoton = {
     BORRAR_ACTIVO: "boton-espacio",
@@ -25,11 +26,9 @@ export default function Game(config) {
     this.fichaEnJuego = null
     this.botonFichaEspacio = null
     this.botonFichaEnJuego = null
-    this.celdaElegidaJugador = null
+    this.celdaEnJuego = null
     this.miniCPU = null
     this.animacion = null
-    this.x = 0.5 * config.ANCHO - 30 
-    this.timer = 0
 }
 
 Game.prototype = Object.create(Game.prototype)
@@ -46,22 +45,9 @@ Game.prototype.create = function () {
 
     this.fichaEnJuego = this.config.getFichaCpu()
     this.cuadricula = new Cuadricula()
-    this.miniCPU = new MiniCPU(this.cuadricula, this.config.getFichaCpu(), this.config.getClaseFicha(), this.config.getFichaEspacio(), this.config.getDificultad())
-
-    this.animacion = this.add.group()
-    
-
+    this.miniCPU = new MiniCPU(this.cuadricula, this.config.getFichaCpu(), this.config.getFichaJugador(), this.config.getFichaEspacio(), this.config.getDificultad())
     this.colocarFichaCpu()
     this.inhabilitarBotones()
-}
-
-Game.prototype.draw = function () {
-    const item = this.animacion.create(this.x, 80, 'punto')    
-    item.anchor.set(1 / 2)
-    this.x += 25
-    if (this.animacion.countLiving() > 3) {
-        this.reset()
-    }
 }
 
 Game.prototype.reset = function () {
@@ -80,7 +66,7 @@ Game.prototype.redibujarTablero = function () {
 }
 
 Game.prototype.colocarFichaCpu = function () {
-    this.timer = setInterval(this.draw.bind(this), 100);
+    this.animacion = new Loading(this, new Punto(0.5*this.config.ANCHO, 75))
     this.miniCPU.colocarFicha()
 
     if (this.miniCPU.finalizoJuego()) {
@@ -97,16 +83,16 @@ Game.prototype.colocarFichaCpu = function () {
 }
 
 Game.prototype.iniciaColocacionJugador = function (imagen) {
-    this.celdaElegidaJugador = imagen.toCelda()
-    this.celdaElegidaJugador.setClaseFicha(ClaseList.fromNombre('ficha-espacio-activo'))
-    this.cuadricula.setCelda(this.celdaElegidaJugador)
+    this.celdaEnJuego = imagen.toCelda()
+    this.celdaEnJuego.setClaseFicha(ClaseList.fromNombre('ficha-espacio-activo'))
+    this.cuadricula.setCelda(this.celdaEnJuego)
     this.redibujarTablero()
     this.habilitarBotones()
 }
 
 Game.prototype.finColocacionJugador = function () {
-    this.celdaElegidaJugador.setClaseFicha(this.fichaEnJuego)
-    this.cuadricula.setCelda(this.celdaElegidaJugador)
+    this.celdaEnJuego.setClaseFicha(this.fichaEnJuego)
+    this.cuadricula.setCelda(this.celdaEnJuego)
     this.redibujarTablero()
     this.intercambiarClaseFicha()
     this.inhabilitarBotones()
@@ -121,20 +107,19 @@ Game.prototype.finColocacionJugador = function () {
 
 Game.prototype.cancelarColocacionJugador = function () {
     this.inhabilitarBotones()
-    this.celdaElegidaJugador.setClaseFicha(ClaseList.fromNombre('ficha-espacio'))
-    this.cuadricula.setCelda(this.celdaElegidaJugador)
+    this.celdaEnJuego.setClaseFicha(ClaseList.fromNombre('ficha-espacio'))
+    this.cuadricula.setCelda(this.celdaEnJuego)
     this.redibujarTablero()
     this.tablero.habilitarEspaciosDisponible()
 }
 
 Game.prototype.habilitarTurnoJugador = function () {
-    clearInterval(this.timer)
+    this.animacion.stop()
     this.reset()
 
     this.redibujarTablero()
     this.tablero.habilitarEspaciosDisponible()
     this.intercambiarClaseFicha()
-    this.habilitarBotones()
 }
 
 Game.prototype.inhabilitarBotones = function () {
@@ -171,12 +156,12 @@ Game.prototype.intercambiarClaseFicha = function () {
 Game.prototype.notificarResultado = function () {
     if (this.miniCPU.hayGanador()) {
         const linea = this.miniCPU.getLineaGanador()
-        new Tachado(this.game, linea)
+        new Tachado(this, linea)
     }
     const centro = new Punto(0.5 * this.config.ANCHO, 0.5 * this.config.ALTURA)
     new Notificacion(this, this.miniCPU, centro)
     this.time.events.add(6e3, this.cerrarJuego, this)
-    clearInterval(this.timer)
+    this.animacion.stop()
 }
 
 Game.prototype.cerrarJuego = function () {
@@ -184,6 +169,6 @@ Game.prototype.cerrarJuego = function () {
     this.miniCPU = new MiniCPU(this.cuadricula, this.config.getFichaCpu(), this.config.getClaseFicha(), this.config.getDificultad())
     this.fichaEnJuego = this.config.getFichaCpu()
     this.tablero = null
-    this.celdaElegidaJugador = null
+    this.celdaEnJuego = null
     this.game.state.start('MainMenu')
 }

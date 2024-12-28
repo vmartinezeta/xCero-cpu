@@ -32,7 +32,7 @@ Cuadricula.prototype.fromXY = function (x, y) {
 }
 
 Cuadricula.prototype.fromPunto = function (punto) {
-    return this.fromXY(punto.getX(), punto.getY())
+    return this.fromXY(punto.x, punto.y)
 }
 
 Cuadricula.prototype.setCelda = function (celda) {
@@ -65,18 +65,6 @@ Cuadricula.prototype.toLineas = function () {
     return lineas
 }
 
-Cuadricula.prototype.getCeldasEspacio = function () {
-    return this.toArrayCelda().filter(c => c.isEspacioDisponible())
-}
-
-Cuadricula.prototype.getCeldasOcupada = function () {
-    return this.toArrayCelda().filter(c => !c.isEspacioDisponible())
-}
-
-Cuadricula.prototype.getPuntosEspacio = function () {
-    return this.getCeldasEspacio().map(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto)
-}
-
 Cuadricula.prototype.toArrayCelda = function () {
     const celdas = []
     for (let i = 0; i < this.NUMERO_FILAS; i++) {
@@ -85,4 +73,16 @@ Cuadricula.prototype.toArrayCelda = function () {
         }
     }
     return celdas
+}
+
+Cuadricula.prototype.toPuntosAbstracto = function () {
+    return this.toArrayCelda().map(({ubicacion}) => ubicacion.puntoAbstracto)
+}
+
+Cuadricula.prototype.getPuntosEspacio = function () {
+    return this.toArrayCelda().filter(c => c.isEspacioDisponible()).map(({ubicacion})=>ubicacion.puntoAbstracto)
+}
+
+Cuadricula.prototype.tieneEspacioDisponible = function() {
+    return this.toArrayCelda().filter(c => c.isEspacioDisponible()).length > 0
 }

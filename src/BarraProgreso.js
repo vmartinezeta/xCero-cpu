@@ -43,6 +43,9 @@ BarraProgreso.prototype.dibujarRelleno = function (colorFondo, origen) {
 }
 
 BarraProgreso.prototype.llenar = function () {
+    if (this.vol % 10 !== 0) {
+        throw new TypeError("ConfigxCero.volumen, invalido el valor")
+    }
     let xmax = this.origen.getX() + this.vol
     let x = this.origen.getX()
     while (x < xmax) {

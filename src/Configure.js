@@ -15,7 +15,7 @@ Configure.prototype.constructor = Configure
 Configure.prototype.create = function () {
     this.add.sprite(0, 0, 'configuracion')
 
-    new SelectorFicha(this, this.config, this.config.setClaseFicha, this.config.getClaseFicha(), this.config.getClasesFicha(), new Punto(110, 157))
+    new SelectorFicha(this, this.config, this.config.setFichaJugador, this.config.getFichaJugador(), this.config.getClasesFicha(), new Punto(110, 157))
 
     new SelectorFicha(this, this.config, this.config.setDificultad, this.config.getDificultad(), this.config.getDificultades(), new Punto(110, 277))
 
@@ -44,7 +44,7 @@ Configure.prototype.ajustarVolumen = function () {
         siguienteVol = 0
         this.barraProgreso.setVol(siguienteVol)  
     }
-    
+
     this.config.musicaFondo.volume = siguienteVol / 100
     this.config.volumen = siguienteVol
 }

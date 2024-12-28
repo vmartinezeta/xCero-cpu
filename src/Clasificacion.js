@@ -8,27 +8,27 @@ export default function Clasificacion(id, nombre) {
 Clasificacion.prototype = Object.create(Clasificacion.prototype)
 Clasificacion.prototype.constructor = Clasificacion
 
-Clasificacion.prototype.setId = function (id) {
-    this.id = id
-}
-
-Clasificacion.prototype.getId = function () {
+Clasificacion.prototype.getId = function() {
     return this.id
-}
-
-Clasificacion.prototype.setNombre = function (nombre) {
-    this.nombre = nombre
 }
 
 Clasificacion.prototype.getNombre = function () {
     return this.nombre
 }
 
-Clasificacion.prototype.toString = function () {
-    return `${this.id}-${this.nombre}`
+Clasificacion.prototype.isFichaX = function() {
+    return this.id === 1
 }
 
-Clasificacion.prototype.isEscalaMedia = function() {
+Clasificacion.prototype.isFichaCero = function() {
+    return this.id === 0
+}
+
+Clasificacion.prototype.isEscalaDificil = function() {
+    return this.id === 11
+}
+
+Clasificacion.prototype.isEscalaNormal = function() {
     return this.id === 3
 }
 

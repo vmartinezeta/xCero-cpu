@@ -1,8 +1,11 @@
 /*Autor: Víctor Martínez*/
 
+import { ComparisonPoints } from "./ComparisonPoints.js"
+
 export default function ParejaLinea(l1, l2) {
     this.l1 = l1
     this.l2 = l2
+    this.comparison = new ComparisonPoints(l1.toPuntosAbstracto(),l2.toPuntosAbstracto())
 }
 
 ParejaLinea.prototype = Object.create(ParejaLinea.prototype)
@@ -21,24 +24,13 @@ ParejaLinea.prototype.toNumber = function () {
 }
 
 ParejaLinea.prototype.intersecta = function () {
-    const puntos = this.l1.toPuntosAbstracto()
-    for (let p1 of puntos) {
-        for (let p2 of this.l2.toPuntosAbstracto()) {
-            if (p1.toString() === p2.toString()) {
-                return true
-            }
-        }
-    }
-    return false
+    return this.comparison.hasIntercepto()
 }
 
 ParejaLinea.prototype.getCeldaIntercepto = function () {
-    for (let p1 of this.l1.toPuntosAbstracto()) {
-        for (let p2 of this.l2.toPuntosAbstracto()) {
-            if (p1.toString() === p2.toString()) {
-                return this.l1.celdaFrom(p1)
-            }
-        }
+    if (!this.comparison.hasIntercepto()) {
+        throw new TypeError("Error")
     }
-    throw new Error('No hay intercepto')
+    const [punto] = this.comparison.intersection()
+    return this.l1.celdaFrom(punto)
 }
