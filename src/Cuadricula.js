@@ -86,3 +86,7 @@ Cuadricula.prototype.getPuntosEspacio = function () {
 Cuadricula.prototype.tieneEspacioDisponible = function() {
     return this.toArrayCelda().filter(c => c.isEspacioDisponible()).length > 0
 }
+
+Cuadricula.prototype.estaIntacta = function () {
+    return this.toArrayCelda().filter(c=>!c.isEspacioDisponible()).length === 0
+}

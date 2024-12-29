@@ -12,10 +12,10 @@ export class ComparadorPuntoArray {
     }
 
     tieneIntercepto() {
-        return this.getInterccion().length !== 0
+        return this.getInterseccion().length !== 0
     }
 
-    getInterccion() {
+    getInterseccion() {
         const intersectos = []
         for (const elem of this.grupo2) {
             if (this.grupo1.has(elem)) {

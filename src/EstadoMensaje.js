@@ -8,8 +8,6 @@ export default function EstadoMensaje(observador) {
     } else if (observador.hayEmpate()) {
         this.empate()
     }
-
-    throw new TypeError("No se puede dar un estado")
 }
 
 EstadoMensaje.prototype = Object.create(EstadoMensaje.prototype)

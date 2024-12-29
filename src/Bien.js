@@ -17,26 +17,24 @@ Bien.prototype.getLinea = function () {
 Bien.prototype.getPropietario = function () {
     const contador = { cpu: 0, jugador: 0, espacio: 0 }
     
-    for (const celda of this.linea.toArrayCelda()) {
+    for (const celda of this.linea.getCeldas()) {
         const clase = celda.getClaseFicha()
-        if (clase.toString() === this.fichaCpu.toString()) {
+        if (clase.id === this.fichaCpu.id) {
             contador.cpu++
-        } else if (clase.toString() === this.fichaJugador.toString()) {
+        } else if (clase.id === this.fichaJugador.id) {
             contador.jugador++
-        } else if (clase.toString() === this.fichaEspacio.toString()) {
+        } else if (clase.id === this.fichaEspacio.id) {
             contador.espacio++
         }
     }
 
     const { cpu, jugador, espacio } = contador
 
-    if ((cpu > jugador && cpu > espacio)
-        || (espacio > jugador && espacio > cpu && cpu > jugador)) {
+    if ((cpu === 1 && espacio === 2) || (cpu>=2 && espacio+jugador===0)) {
         return this.fichaCpu
-    } else if ((jugador > cpu && jugador > espacio)
-        || (espacio > jugador && espacio > cpu && jugador > cpu)) {
+    } else if ((jugador === 1 && espacio===2)|| (jugador>=2 && espacio+jugador===0)) {
         return this.fichaJugador
-    } else if (espacio > jugador && espacio > cpu) {
+    } else if (espacio === 3 && cpu+jugador===0) {
         return this.fichaEspacio
     }
     return null
@@ -52,4 +50,8 @@ Bien.prototype.isFichaCpu = function() {
 
 Bien.prototype.isFichaEspacio = function() {
     return this.tienePropietario() && this.getPropietario().id === this.fichaEspacio.id
+}
+
+Bien.prototype.estaNeutro = function () {
+    return this.linea.toBit() === 2*this.fichaJugador.id+this.fichaEspacio.id
 }

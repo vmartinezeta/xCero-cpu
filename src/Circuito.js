@@ -16,22 +16,15 @@ export default class Circuito {
     }
 
     formaCircuito() {
-        return this.parejas.every(pareja => pareja.intersecta()) && !this.igualInterceptos()
+        return this.parejas.every(pareja => pareja.intersecta())
     }
 
-    igualInterceptos() {
-        const celdas = []
-        for (let p of this.parejas) {
-            if (p.intersecta()) {
-                celdas.push(p.getCeldaIntercepto())
-            }
-        }
-        const [p1, p2, p3] = celdas.map(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto)
-        return p1.toString() === p2.toString() && p1.toString() === p3.toString()
+    getInterceptos() {
+        return this.l3.getExtremos()
     }
 
-    interceptosClaveDisponibles() {
-        return this.l3.toArrayCelda().filter(c => c.isEspacioDisponible())
+    acechaEnemigo () {
+        return this.l1.estaNeutra()
     }
 
 }

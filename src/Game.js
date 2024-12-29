@@ -94,7 +94,7 @@ Game.prototype.finColocacionJugador = function () {
     this.celdaEnJuego.setClaseFicha(this.fichaEnJuego)
     this.cuadricula.setCelda(this.celdaEnJuego)
     this.redibujarTablero()
-    this.intercambiarClaseFicha()
+    this.cambiarTurno()
     this.inhabilitarBotones()
 
     if (this.miniCPU.finalizoJuego()) {
@@ -119,7 +119,8 @@ Game.prototype.habilitarTurnoJugador = function () {
 
     this.redibujarTablero()
     this.tablero.habilitarEspaciosDisponible()
-    this.intercambiarClaseFicha()
+    this.cambiarTurno()
+    this.inhabilitarBotones()
 }
 
 Game.prototype.inhabilitarBotones = function () {
@@ -127,7 +128,7 @@ Game.prototype.inhabilitarBotones = function () {
     this.botonFichaEspacio.inputEnabled = false
 
     let estadoFicha = EstadoBoton.FICHA_X_INACTIVO
-    if (this.fichaEnJuego.toString() === ClaseList.fromNombre('ficha-0').toString()) {
+    if (this.fichaEnJuego.isFichaCero()) {
         estadoFicha = EstadoBoton.FICHA_0_INACTIVO
     }
     this.botonFichaEnJuego.loadTexture(estadoFicha)
@@ -138,15 +139,15 @@ Game.prototype.habilitarBotones = function () {
     this.botonFichaEnJuego.inputEnabled = true
     this.botonFichaEspacio.inputEnabled = true
     let estadoFicha = EstadoBoton.FICHA_X_ACTIVO
-    if (this.fichaEnJuego.toString() === ClaseList.fromNombre('ficha-0').toString()) {
+    if (this.fichaEnJuego.isFichaCero()) {
         estadoFicha = EstadoBoton.FICHA_0_ACTIVO
     }
     this.botonFichaEnJuego.loadTexture(estadoFicha)
     this.botonFichaEspacio.loadTexture(EstadoBoton.BORRAR_ACTIVO)
 }
 
-Game.prototype.intercambiarClaseFicha = function () {
-    if (this.fichaEnJuego.toString() === ClaseList.fromNombre('ficha-x').toString()) {
+Game.prototype.cambiarTurno = function () {
+    if (this.fichaEnJuego.isFichaX()) {
         this.fichaEnJuego = ClaseList.fromNombre('ficha-0')
     } else {
         this.fichaEnJuego = ClaseList.fromNombre('ficha-x')
@@ -166,7 +167,7 @@ Game.prototype.notificarResultado = function () {
 
 Game.prototype.cerrarJuego = function () {
     this.cuadricula = new Cuadricula(this.config.getFichaCpu())
-    this.miniCPU = new MiniCPU(this.cuadricula, this.config.getFichaCpu(), this.config.getClaseFicha(), this.config.getDificultad())
+    this.miniCPU = new MiniCPU(this.cuadricula, this.config.getFichaCpu(), this.config.getFichaJugador(), this.config.getDificultad())
     this.fichaEnJuego = this.config.getFichaCpu()
     this.tablero = null
     this.celdaEnJuego = null
