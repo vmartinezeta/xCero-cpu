@@ -4,7 +4,9 @@ import ClaseList from "./ClaseList.js"
 import Punto from "./Punto.js"
 import PuntoArranque from "./PuntoArranque.js"
 import Bien from "./Bien.js"
-import Circuito from "./Circuito.js"
+import EsquinaStrategy from "./EsquinaStrategy.js"
+import CentroStrategy from "./CentroStrategy.js"
+import CeldaStrategy from "./CeldaStrategy.js"
 
 const PuntoArranqueController = {
     lista: [
@@ -19,7 +21,7 @@ const PuntoArranqueController = {
     ],
     fromNivel: function (nivel) {
         return this.lista.filter(function (puntoArranque) {
-            return puntoArranque.getNivel().toString() === nivel.toString()
+            return puntoArranque.getNivel().id === nivel.id
         })
     }
 }
@@ -30,7 +32,7 @@ export default function MiniCPU(cuadricula, fichaCpu, fichaJugador, fichaEspacio
     this.fichaJugador = fichaJugador
     this.fichaEspacio = fichaEspacio
     this.dificultad = dificultad
-    this.circuito = null
+    this.strategy =  null
 }
 
 MiniCPU.prototype = Object.create(MiniCPU.prototype)
@@ -50,7 +52,14 @@ MiniCPU.prototype.colocarFicha = function () {
     } else if (this.puedeResponderFormaRandom()) {
         this.colocarPuntoRandom()
     } else if (this.debeHacerEstrategia()) {
-        this.colocarPuntoEstrategico()
+        let strategy = null
+        if (this.dificultad.isEscalaDificil()) {
+        } else if (this.dificultad.isEscalaNormal()) {
+            strategy = new EsquinaStrategy(this.cuadricula, this.fichaCpu, this.fichaJugador)
+        } else if (this.dificultad.isEscalaFacil()) {
+            strategy = new CentroStrategy()
+        }
+        this.colocarPuntoEstrategico(strategy)
     }
 }
 
@@ -72,14 +81,14 @@ MiniCPU.prototype.hayGanador = function () {
 
 MiniCPU.prototype.falloJugador = function () {
     try {
-     const l = this.getLineaGanador()
-     return l.contieneTodas(this.fichaCpu)
+        const l = this.getLineaGanador()
+        return l.contieneTodas(this.fichaCpu)
     } catch (error) {
         return false
     }
 }
 
-MiniCPU.prototype.ganoJugador = function() {
+MiniCPU.prototype.ganoJugador = function () {
     try {
         const l = this.getLineaGanador()
         return l.contieneTodas(this.fichaJugador)
@@ -102,17 +111,25 @@ MiniCPU.prototype.getLineaGanador = function () {
 
 MiniCPU.prototype.puedeNeutralizar = function () {
     for (const l of this.cuadricula.toLineas()) {
-        const bien = new Bien(l, this.fichaCpu, this.fichaJugador, this.fichaEspacio)
+        const bien = new Bien(l, this.fichaCpu, this.fichaJugador)
         if (bien.estaNeutro()) return true
     }
     return false
 }
 
-MiniCPU.prototype.colocarPuntoNeutro = function () {}
+MiniCPU.prototype.colocarPuntoNeutro = function () { 
+    const bienes = this.cuadricula.toLineas().map(l => new Bien(l, this.fichaCpu, this.fichaJugador))
+    const bien = bienes.find(b => b.estaNeutro())
+    const l = bien.linea
+    const celda = l.getCeldaEspacio()
+    celda.setClaseFicha(this.fichaCpu)
+    this.cuadricula.setCelda(celda)
+}
 
 MiniCPU.prototype.puedeGanar = function () {
     for (const l of this.cuadricula.toLineas()) {
-        if (l.puedeGanar()) return true
+        const bien = new Bien(l, this.fichaCpu, this.fichaJugador)
+        if (bien.puedeGanarCpu()) return true
     }
     return false
 }
@@ -150,35 +167,16 @@ MiniCPU.prototype.colocarPuntoArranque = function () {
     this.cuadricula.setCelda(celda)
 }
 
-MiniCPU.prototype.colocarPuntoEstrategico = function () {
-    const bienes = this.cuadricula.toLineas()
-    .map(l => new Bien(l, this.fichaCpu, this.fichaJugador, this.fichaEspacio))
-
-    const lineasBase = bienes.filter(b=>b.isFichaCpu()).map(b=>b.linea)
-    const lineasCierre = bienes.filter(b => b.isFichaEspacio()).map(b=>b.linea)
-    if (!this.circuito || this.circuito && this.circuito.acechaEnemigo()) {
-        this.crearCircuito(lineasBase, lineasCierre)
+MiniCPU.prototype.colocarPuntoEstrategico = function (strategy) {
+    if (!(strategy instanceof CeldaStrategy)) {
+        throw new TypeError("No es una estrategia valida")
     }
-
-    const espacios = this.circuito.getInterceptos()
-    const idx = Math.floor(Math.random() * espacios.length)
-    const celda = espacios.at(idx)
-    celda.setClaseFicha(this.fichaCpu)
-    this.cuadricula.setCelda(celda)
-}
-
-MiniCPU.prototype.crearCircuito = function (lineasBase, lineasCierre) {
-    if (this.circuito ===null) {
-        for (const l of lineasCierre) {
-            this.circuito = new Circuito(...lineasBase, l)
-            if (this.circuito.formaCircuito()) return
-        }
-    }
+    strategy.updateCelda()
 }
 
 MiniCPU.prototype.puedeResponderFormaRandom = function () {
     const espacios = this.cuadricula.getPuntosEspacio()
-    return espacios.length<=3 && !this.formaLineaRecta(espacios)
+    return espacios.length <= 3 && !this.formaLineaRecta(espacios)
 }
 
 MiniCPU.prototype.formaLineaRecta = function (puntos) {
@@ -193,9 +191,9 @@ MiniCPU.prototype.formaLineaRecta = function (puntos) {
 }
 
 MiniCPU.prototype.colocarPuntoRandom = function () {
-    const espacios = this.cuadricula.getCeldasEspacio().map(({ ubicacion: { puntoAbstracto } }) => puntoAbstracto)
-    const n = Math.floor(Math.random() * espacios.length)
-    const punto = espacios[n]
+    const espacios = this.cuadricula.getPuntosEspacio()
+    const idx = Math.floor(Math.random() * espacios.length)
+    const punto = espacios.at(idx)
     const celda = this.cuadricula.fromPunto(punto)
     celda.setClaseFicha(this.fichaCpu)
     this.cuadricula.setCelda(celda)

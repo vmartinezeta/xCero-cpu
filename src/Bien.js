@@ -1,10 +1,12 @@
 /*Autor: Víctor Martínez*/
 
-export default function Bien(linea, fichaCpu, fichaJugador, fichaEspacio) {
+import ClaseList from "./ClaseList.js"
+
+export default function Bien(linea, fichaCpu, fichaJugador) {
     this.linea = linea
     this.fichaCpu = fichaCpu
     this.fichaJugador = fichaJugador
-    this.fichaEspacio = fichaEspacio
+    this.fichaEspacio = ClaseList.fromNombre("ficha-espacio")
 }
 
 Bien.prototype = Object.create(Bien.prototype)
@@ -53,5 +55,9 @@ Bien.prototype.isFichaEspacio = function() {
 }
 
 Bien.prototype.estaNeutro = function () {
-    return this.linea.toBit() === 2*this.fichaJugador.id+this.fichaEspacio.id
+    return this.linea.puedeGanar() && this.linea.contiene(this.fichaJugador)
+}
+
+Bien.prototype.puedeGanarCpu = function() {
+    return this.linea.puedeGanar() && this.linea.contiene(this.fichaCpu)
 }

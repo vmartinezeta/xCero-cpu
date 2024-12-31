@@ -48,6 +48,10 @@ Linea.prototype.contieneTodas = function (ficha) {
     return 3 * ficha.id === this.toBit()
 }
 
+Linea.prototype.contiene = function (ficha) {
+    return this.celdas.map(({claseFicha})=>claseFicha.id).includes(ficha.id)
+}
+
 Linea.prototype.contieneTodos = function (puntos) {
     const internos = this.celdas.map(({ ubicacion }) => ubicacion.puntoAbstracto).map(p => p.toString())
     return internos.join("") === puntos.join("")

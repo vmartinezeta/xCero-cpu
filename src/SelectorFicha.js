@@ -1,14 +1,13 @@
 /*Autor: Víctor Martínez*/
 
 export default function SelectorFicha(game, config, selector, predeterminada, opciones, origen) {
-
     Phaser.Group.call(this, game)
     this.config = config
     this.origen = origen
     this.selector = selector
     this.tipoFicha = predeterminada
     this.opciones = opciones
-    this.indice = opciones.findIndex(claseFicha => claseFicha.toString() === predeterminada.toString())
+    this.indice = opciones.findIndex(claseFicha => claseFicha.id === predeterminada.id)
     this.botones = []
 
     this.setAll('anchor.set', 1 / 2)
