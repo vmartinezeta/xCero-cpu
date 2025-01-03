@@ -1,6 +1,6 @@
 /*Autor: Víctor Martínez*/
 
-import Punto from "./Punto.js"
+import Punto from "../classes/Punto.js"
 
 export default function Tachado(game, linea) {
     const [p1, p2] = linea.getPuntosExtremo()

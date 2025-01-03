@@ -1,5 +1,5 @@
 /*Autor: Víctor Martínez*/
-import Punto from "./Punto.js"
+import Punto from "../classes/Punto.js"
 
 
 export default function BarraProgreso(game, origen, vol, color) {

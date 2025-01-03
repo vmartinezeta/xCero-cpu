@@ -20,7 +20,7 @@ export default class Circuito {
     }
 
     getInterceptos() {
-        return this.l3.getExtremos()
+        return this.l3.getExtremos().filter(c => c.isEspacioDisponible())
     }
 
     acechaEnemigo () {

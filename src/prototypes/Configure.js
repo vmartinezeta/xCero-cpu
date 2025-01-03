@@ -1,7 +1,7 @@
 /*Autor: Víctor Martínez*/
 
 import BarraProgreso from "./BarraProgreso.js"
-import Punto from "./Punto.js"
+import Punto from "../classes/Punto.js"
 import SelectorFicha from "./SelectorFicha.js"
 
 export default function Configure(config) {

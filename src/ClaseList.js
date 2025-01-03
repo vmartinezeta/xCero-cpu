@@ -1,6 +1,6 @@
 /*Autor: Víctor Martínez*/
 
-import Clasificacion from "./Clasificacion.js"
+import Clasificacion from "./classes/Clasificacion.js"
 
 const ClaseList = {
     lista: [

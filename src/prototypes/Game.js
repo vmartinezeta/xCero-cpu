@@ -1,12 +1,12 @@
 /*Autor: Víctor Martínez*/
 
-import ClaseList from "./ClaseList.js"
-import Cuadricula from "./Cuadricula.js"
+import ClaseList from "../ClaseList.js"
+import Cuadricula from "../classes/Cuadricula.js"
 import Notificacion from "./Notificacion.js"
-import Punto from "./Punto.js"
+import Punto from "../classes/Punto.js"
 import Tablero from "./Tablero.js"
 import Tachado from "./Tachado.js"
-import MiniCPU from "./MiniCPU.js"
+import MiniCPU from "../classes/MiniCPU.js"
 import { Loading } from "./Loading.js"
 
 const EstadoBoton = {
@@ -45,7 +45,7 @@ Game.prototype.create = function () {
 
     this.fichaEnJuego = this.config.getFichaCpu()
     this.cuadricula = new Cuadricula()
-    this.miniCPU = new MiniCPU(this.cuadricula, this.config.getFichaCpu(), this.config.getFichaJugador(), this.config.getFichaEspacio(), this.config.getDificultad())
+    this.miniCPU = new MiniCPU(this.cuadricula, this.config)
     this.colocarFichaCpu()
     this.inhabilitarBotones()
 }
@@ -166,8 +166,8 @@ Game.prototype.notificarResultado = function () {
 }
 
 Game.prototype.cerrarJuego = function () {
-    this.cuadricula = new Cuadricula(this.config.getFichaCpu())
-    this.miniCPU = new MiniCPU(this.cuadricula, this.config.getFichaCpu(), this.config.getFichaJugador(), this.config.getDificultad())
+    this.cuadricula = new Cuadricula()
+    this.miniCPU = new MiniCPU(this.cuadricula, this.config)
     this.fichaEnJuego = this.config.getFichaCpu()
     this.tablero = null
     this.celdaEnJuego = null

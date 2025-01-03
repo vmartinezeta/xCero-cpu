@@ -17,7 +17,6 @@ export default class ParejaLinea extends ComparadorPuntoArray{
         if (!this.tieneIntercepto()) {
             throw new TypeError("No hay intercepto")
         }
-        const [punto] = this.getInterseccion()
-        return this.l1.celdas.find(({ubicacion})=>ubicacion.puntoAbstracto.toString()===punto.toString())
+        return this.getInterseccion()
     }
 }

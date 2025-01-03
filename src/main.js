@@ -1,10 +1,10 @@
 /*Autor: Víctor Martínez*/
 
-import Boot from "./Boot.js"
-import ConfigxCero from "./ConfigxCero.js"
-import Game from "./Game.js"
-import MainMenu from "./MainMenu.js"
-import Preloader from "./Preloader.js"
+import Boot from "./prototypes/Boot.js"
+import ConfigxCero from "./classes/ConfigxCero.js"
+import Game from "./prototypes/Game.js"
+import MainMenu from "./prototypes/MainMenu.js"
+import Preloader from "./prototypes/Preloader.js"
 
 
 const xCero = new ConfigxCero()

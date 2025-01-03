@@ -1,6 +1,6 @@
 /*Autor: Víctor Martínez*/
 
-import EstadoMensaje from "./EstadoMensaje.js"
+import EstadoMensaje from "../classes/EstadoMensaje.js"
 
 export default function Notificacion(game, observador, origen) {
     const estado = new EstadoMensaje(observador)

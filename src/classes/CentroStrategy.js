@@ -1,9 +1,9 @@
 import Bien from "./Bien.js"
 import CeldaStrategy from "./CeldaStrategy.js"
 import Circuito from "./Circuito.js"
-import { UpdaterCellMixin } from "./UpdaterCellMixin.js"
+import { UpdaterCellMixin } from "../mixins/UpdaterCellMixin.js"
 
-export default class EsquinaStrategy extends CeldaStrategy {
+export default class CentroStrategy extends CeldaStrategy {
     constructor(cuadricula, fichaCpu, fichaJugador) {
         super()
         this.circuito = null
@@ -16,15 +16,19 @@ export default class EsquinaStrategy extends CeldaStrategy {
 
     updateCelda() {
         const lineasBase = this.bienes.filter(b => b.isFichaCpu()).map(b => b.linea)
-        const lineasCierre = this.bienes.filter(b => b.isFichaEspacio()).map(b => b.linea)
-        if (!this.circuito || this.circuito && this.circuito.acechaEnemigo()) {
-            this.crearCircuito(lineasBase, lineasCierre)
+        if (lineasBase.length === 1) {
+            lineasBase.push(this.cuadricula.toLineas().find(l =>l.estaNeutra()))
         }
-
+        const lineasCierre = this.bienes.filter(b => b.isFichaEspacio()).map(b => b.linea)
+        this.crearCircuito(lineasBase, lineasCierre)
         const espacios = this.circuito.getInterceptos()
         const idx = Math.floor(Math.random() * espacios.length)
         this.celda = espacios.at(idx)
         this.update()
+    }
+
+    fueDescubierta() {
+        return this.circuito && this.circuito.estaNeutralizado()
     }
 
     crearCircuito(lineasBase, lineasCierre) {
@@ -36,4 +40,4 @@ export default class EsquinaStrategy extends CeldaStrategy {
 }
 
 
-Object.assign(EsquinaStrategy.prototype, UpdaterCellMixin) 
+Object.assign(CentroStrategy.prototype, UpdaterCellMixin) 
